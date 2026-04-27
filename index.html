@@ -1,63 +1,164 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Jeu de la Vie — Vibe</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game of Life</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <div class="app">
-    <div id="viewport"><canvas id="canvas"></canvas></div>
+<body class="light">
 
-    <aside class="controls">
-      <h1>Jeu de la Vie</h1>
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside id="sidebar">
+    <div class="logo">
+      <span class="logo-symbol">⬛</span>
+      <h1>GAME<br/>OF LIFE</h1>
+    </div>
 
-      <div class="row">
-        <button id="startBtn">Lancer</button>
-        <button id="stepBtn">Step</button>
-        <button id="clearBtn">Clear</button>
-        <button id="randomBtn">Random</button>
+    <!-- Controls -->
+    <section class="panel" id="panel-controls">
+      <h2 class="panel-title">CONTRÔLES</h2>
+
+      <div class="btn-row">
+        <button id="btn-play" class="btn btn-primary" title="Lancer / Pause (Espace)">
+          <span id="play-icon">▶</span>
+          <span id="play-label">PLAY</span>
+        </button>
+        <button id="btn-step" class="btn btn-secondary" title="Avancer d'un pas (→)">STEP</button>
       </div>
 
-      <div class="row">
-        <select id="preset"></select>
-        <button id="loadPreset">Charger</button>
+      <button id="btn-clear" class="btn btn-ghost full-width">EFFACER</button>
+      <button id="btn-random" class="btn btn-ghost full-width">ALÉATOIRE</button>
+
+      <div class="slider-group">
+        <label>VITESSE <span id="speed-val">10</span> gen/s</label>
+        <input type="range" id="speed-slider" min="1" max="60" value="10" />
       </div>
 
-      <div class="row">
-        <button id="themeBtn">Inverser thème</button>
+      <div class="slider-group">
+        <label>ZOOM <span id="zoom-val">16</span>px</label>
+        <input type="range" id="zoom-slider" min="4" max="64" value="16" />
       </div>
+    </section>
 
-      <div class="row">
-        <label for="speed">Vitesse (gen/s)</label>
-        <input id="speed" type="range" min="1" max="30" value="6">
+    <!-- Stats -->
+    <section class="panel" id="panel-stats">
+      <h2 class="panel-title">STATISTIQUES</h2>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span class="stat-label">GÉN.</span>
+          <span class="stat-value" id="stat-gen">0</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">VIVANTS</span>
+          <span class="stat-value" id="stat-alive">0</span>
+        </div>
       </div>
+      <div class="stat-wide">
+        <span class="stat-label">POSITION</span>
+        <span class="stat-value small" id="stat-pos">0, 0</span>
+      </div>
+    </section>
 
-      <div class="row">
-        <label for="cellSize">Taille cellule (px)</label>
-        <input id="cellSize" type="range" min="4" max="40" value="12">
+    <!-- Patterns -->
+    <section class="panel" id="panel-patterns">
+      <h2 class="panel-title">MOTIFS</h2>
+      <select id="pattern-select" class="select-field">
+        <option value="">— Choisir un motif —</option>
+        <optgroup label="Oscillateurs">
+          <option value="blinker">Blinker (T=2)</option>
+          <option value="toad">Crapaud (T=2)</option>
+          <option value="beacon">Phare (T=2)</option>
+          <option value="pulsar">Pulsar (T=3)</option>
+          <option value="pentadecathlon">Pentadécathlon (T=15)</option>
+        </optgroup>
+        <optgroup label="Vaisseaux">
+          <option value="glider">Planeur (Glider)</option>
+          <option value="lwss">LWSS</option>
+          <option value="mwss">MWSS</option>
+          <option value="hwss">HWSS</option>
+        </optgroup>
+        <optgroup label="Canons">
+          <option value="gosper">Gosper Glider Gun</option>
+          <option value="simkin">Simkin Glider Gun</option>
+        </optgroup>
+        <optgroup label="Still Life">
+          <option value="block">Bloc</option>
+          <option value="beehive">Ruche</option>
+          <option value="loaf">Miche</option>
+          <option value="boat">Bateau</option>
+        </optgroup>
+        <optgroup label="Autres">
+          <option value="rpentomino">R-Pentomino</option>
+          <option value="diehard">Die Hard</option>
+          <option value="acorn">Gland (Acorn)</option>
+          <option value="pi">Pi Heptomino</option>
+        </optgroup>
+      </select>
+      <div class="btn-row">
+        <button id="btn-place" class="btn btn-secondary full-width">PLACER AU CENTRE</button>
       </div>
+    </section>
 
-      <div class="row">
-        <label>Importer RLE/JSON</label>
-        <input type="file" id="fileIn" accept=".rle,.txt,.json">
+    <!-- Import / Export -->
+    <section class="panel" id="panel-io">
+      <h2 class="panel-title">IMPORT / EXPORT</h2>
+      <div class="btn-row">
+        <button id="btn-export-json" class="btn btn-ghost">JSON</button>
+        <button id="btn-export-rle" class="btn btn-ghost">RLE</button>
       </div>
+      <label class="btn btn-ghost full-width file-label" title="Importer JSON ou RLE">
+        IMPORTER
+        <input type="file" id="file-import" accept=".json,.rle,.txt" hidden />
+      </label>
+    </section>
 
-      <div class="row">
-        <button id="exportRle">Exporter RLE</button>
-        <button id="exportJson">Exporter JSON</button>
-      </div>
+    <!-- Theme -->
+    <div class="theme-row">
+      <span>THÈME</span>
+      <button id="btn-theme" class="theme-toggle" title="Inverser le thème">
+        <span id="theme-icon">◐</span>
+      </button>
+    </div>
 
-      <div class="info">
-        Peindre : clic gauche / Glisser pour peindre<br>
-        Pan : clic droit + glisser / Zoom : molette<br>
-        Touche G : afficher/masquer grille
+    <div class="help-hint">
+      <kbd>Espace</kbd> play · <kbd>→</kbd> step<br/>
+      <kbd>Clic</kbd> dessiner · <kbd>Clic+glisser</kbd> pan<br/>
+      <kbd>Molette</kbd> zoom
+    </div>
+  </aside>
+
+  <!-- ═══ CANVAS AREA ═══ -->
+  <main id="canvas-area">
+    <canvas id="life-canvas"></canvas>
+
+    <!-- Floating HUD -->
+    <div id="hud">
+      <span id="hud-gen">GÉN. 0</span>
+      <span id="hud-mode" class="mode-badge">DESSIN</span>
+    </div>
+
+    <!-- Notification toast -->
+    <div id="toast"></div>
+  </main>
+
+  <!-- ═══ MODAL ═══ -->
+  <div id="modal-overlay" hidden>
+    <div id="modal">
+      <div id="modal-title">Export</div>
+      <textarea id="modal-text" spellcheck="false" readonly></textarea>
+      <div class="btn-row">
+        <button id="modal-copy" class="btn btn-primary">COPIER</button>
+        <button id="modal-close" class="btn btn-ghost">FERMER</button>
       </div>
-    </aside>
+    </div>
   </div>
 
   <script src="patterns.js"></script>
-  <script src="app.js"></script>
+  <script src="life.js"></script>
+  <script src="renderer.js"></script>
+  <script src="ui.js"></script>
 </body>
 </html>
