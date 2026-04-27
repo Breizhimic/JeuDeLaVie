@@ -150,25 +150,138 @@ document.getElementById("btn-theme").addEventListener("click", () => {
 });
 
 /* ══════════════════════════════════════════════
-   MOTIFS
+   MOTIFS — TRANSFORMATION & PLACEMENT
 ══════════════════════════════════════════════ */
-document.getElementById("btn-place").addEventListener("click", () => {
-  const sel   = document.getElementById("pattern-select");
-  const key   = sel.value;
-  if (!key || !PATTERNS[key]) {
-    toast("Sélectionnez un motif d'abord");
-    return;
+
+// État de la transformation courante
+const transform = {
+  rotation: 0,   // 0, 90, 180, 270
+  flipH: false,
+  flipV: false
+};
+
+let placingMode = false; // true = prochain clic pose le motif
+
+/**
+ * Applique rotation + miroir à un tableau de cellules [[r,c]].
+ */
+function applyTransform(cells) {
+  let result = cells.map(([r, c]) => [r, c]);
+
+  // Miroir horizontal (axe vertical) → inverse les colonnes
+  if (transform.flipH) result = result.map(([r, c]) => [r, -c]);
+  // Miroir vertical (axe horizontal) → inverse les lignes
+  if (transform.flipV) result = result.map(([r, c]) => [-r, c]);
+
+  // Rotation (multiple de 90°)
+  const times = ((transform.rotation / 90) % 4 + 4) % 4;
+  for (let i = 0; i < times; i++) {
+    // Rotation 90° horaire : (r, c) → (c, -r)
+    result = result.map(([r, c]) => [c, -r]);
   }
-  const pattern = PATTERNS[key];
-  // Centre de la vue en coordonnée cellule
+
+  return result;
+}
+
+function getTransformedCells() {
+  const key = document.getElementById("pattern-select").value;
+  if (!key || !PATTERNS[key]) return null;
+  return applyTransform(PATTERNS[key].cells);
+}
+
+function updateRotDisplay() {
+  document.getElementById("rot-display").textContent = transform.rotation + "°";
+  document.getElementById("btn-flip-h").classList.toggle("active", transform.flipH);
+  document.getElementById("btn-flip-v").classList.toggle("active", transform.flipV);
+}
+
+// Rotation CCW / CW
+document.getElementById("btn-rot-ccw").addEventListener("click", () => {
+  transform.rotation = (transform.rotation - 90 + 360) % 360;
+  updateRotDisplay();
+  toast("Rotation " + transform.rotation + "°");
+});
+document.getElementById("btn-rot-cw").addEventListener("click", () => {
+  transform.rotation = (transform.rotation + 90) % 360;
+  updateRotDisplay();
+  toast("Rotation " + transform.rotation + "°");
+});
+
+// Miroirs
+document.getElementById("btn-flip-h").addEventListener("click", () => {
+  transform.flipH = !transform.flipH;
+  updateRotDisplay();
+  toast(transform.flipH ? "Miroir H activé" : "Miroir H désactivé");
+});
+document.getElementById("btn-flip-v").addEventListener("click", () => {
+  transform.flipV = !transform.flipV;
+  updateRotDisplay();
+  toast(transform.flipV ? "Miroir V activé" : "Miroir V désactivé");
+});
+
+// Reset transformation
+document.getElementById("btn-reset-transform").addEventListener("click", () => {
+  transform.rotation = 0; transform.flipH = false; transform.flipV = false;
+  updateRotDisplay();
+  toast("Transformations réinitialisées");
+});
+
+// Placer au centre
+document.getElementById("btn-place").addEventListener("click", () => {
+  const cells = getTransformedCells();
+  if (!cells) { toast("Sélectionnez un motif d'abord"); return; }
   const cs   = renderer.cellSize;
   const centR = Math.floor((renderer.offsetY + canvas.height / 2) / cs);
   const centC = Math.floor((renderer.offsetX + canvas.width  / 2) / cs);
-  gol.placePattern(pattern.cells, centR, centC);
+  gol.placePattern(cells, centR, centC);
   renderer.draw();
   updateStats();
-  toast(`"${pattern.name}" placé au centre`);
+  const name = PATTERNS[document.getElementById("pattern-select").value].name;
+  toast(`"${name}" placé au centre`);
 });
+
+// Mode placement au clic
+function enterPlaceMode() {
+  const cells = getTransformedCells();
+  if (!cells) { toast("Sélectionnez un motif d'abord"); return; }
+  placingMode = true;
+  canvas.style.cursor = "crosshair";
+  document.getElementById("place-hint").classList.add("visible");
+  document.getElementById("btn-place-click").classList.add("active");
+  document.getElementById("hud-mode").textContent = "PLACEMENT";
+  document.getElementById("hud-mode").className   = "mode-badge pan";
+  toast("Cliquez sur la grille pour placer le motif");
+}
+
+function exitPlaceMode() {
+  placingMode = false;
+  canvas.style.cursor = "";
+  document.getElementById("place-hint").classList.remove("visible");
+  document.getElementById("btn-place-click").classList.remove("active");
+  document.getElementById("hud-mode").textContent = "DESSIN";
+  document.getElementById("hud-mode").className   = "mode-badge";
+}
+
+document.getElementById("btn-place-click").addEventListener("click", () => {
+  if (placingMode) { exitPlaceMode(); return; }
+  enterPlaceMode();
+});
+
+// Intercepter le clic sur le canvas si on est en mode placement
+canvas.addEventListener("mousedown", e => {
+  if (!placingMode || e.button !== 0) return;
+  e.stopImmediatePropagation();
+  const cells = getTransformedCells();
+  if (!cells) return;
+  const [r, c] = renderer.pixelToCell(e.offsetX, e.offsetY);
+  gol.placePattern(cells, r, c);
+  renderer.draw();
+  updateStats();
+  const name = PATTERNS[document.getElementById("pattern-select").value].name;
+  toast(`"${name}" placé`);
+  exitPlaceMode();
+}, true); // capture phase pour intercepter avant le renderer
+
 
 /* ══════════════════════════════════════════════
    EXPORT

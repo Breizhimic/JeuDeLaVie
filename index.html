@@ -97,9 +97,29 @@
           <option value="pi">Pi Heptomino</option>
         </optgroup>
       </select>
-      <div class="btn-row">
-        <button id="btn-place" class="btn btn-secondary full-width">PLACER AU CENTRE</button>
+
+      <!-- Rotation -->
+      <div class="transform-row">
+        <label>ROTATION</label>
+        <button class="btn-icon" id="btn-rot-ccw" title="Rotation -90°">↺</button>
+        <span class="rotation-display" id="rot-display">0°</span>
+        <button class="btn-icon" id="btn-rot-cw"  title="Rotation +90°">↻</button>
       </div>
+
+      <!-- Miroir -->
+      <div class="transform-row">
+        <label>MIROIR</label>
+        <button class="btn-icon" id="btn-flip-h" title="Miroir horizontal">⇔</button>
+        <button class="btn-icon" id="btn-flip-v" title="Miroir vertical">⇕</button>
+        <button class="btn-icon" id="btn-reset-transform" title="Réinitialiser">✕</button>
+      </div>
+
+      <!-- Placement -->
+      <div class="btn-row">
+        <button id="btn-place" class="btn btn-primary full-width">PLACER AU CENTRE</button>
+      </div>
+      <button id="btn-place-click" class="btn btn-secondary full-width">PLACER AU CLIC</button>
+      <div class="place-mode-hint" id="place-hint">Cliquez sur la grille ↑</div>
     </section>
 
     <!-- Import / Export -->
@@ -125,9 +145,8 @@
 
     <div class="help-hint">
       <kbd>Espace</kbd> play · <kbd>→</kbd> step<br/>
-      <kbd>Clic</kbd> dessiner · <kbd>Clic+glisser</kbd> pan<br/>
-      <kbd>Molette</kbd> zoom
-    </div>
+      <kbd>Clic droit+glisser</kbd> pan · <kbd>Molette</kbd> zoom<br/>
+      <kbd>+/-</kbd> zoom · <kbd>0</kbd> centrer · <kbd>Échap</kbd> annuler</div>
   </aside>
 
   <!-- ═══ CANVAS AREA ═══ -->

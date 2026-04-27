@@ -28,10 +28,10 @@
 }
 
 body.dark {
-  --cell-alive:   #e8ff3a;
-  --cell-dead:    #0d0d0d;
-  --grid-line:    rgba(255,255,255,0.04);
-  --bg:           #111;
+  --cell-alive:   #f5f4f0;
+  --cell-dead:    #0a0a0a;
+  --grid-line:    rgba(255,255,255,0.05);
+  --bg:           #0a0a0a;
 }
 
 /* ── RESET ──────────────────────────────── */
@@ -452,6 +452,68 @@ body.dark #hud-gen {
   resize: vertical;
   outline: none;
 }
+
+/* ── TRANSFORM CONTROLS ─────────────────── */
+.transform-row {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.transform-row label {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: var(--sidebar-dim);
+  width: 100%;
+  margin-bottom: 0.1rem;
+}
+
+.btn-icon {
+  flex: 1;
+  min-width: 0;
+  padding: 0.45rem 0.3rem;
+  font-size: 0.85rem;
+  background: rgba(255,255,255,0.05);
+  color: var(--sidebar-txt);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.btn-icon:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.btn-icon.active {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+
+.rotation-display {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--accent);
+  text-align: center;
+  letter-spacing: 0.06em;
+}
+
+.place-mode-hint {
+  font-size: 0.6rem;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+  text-align: center;
+  animation: pulse 1s infinite;
+  display: none;
+}
+.place-mode-hint.visible { display: block; }
 
 /* ── RESPONSIVE ─────────────────────────── */
 @media (max-width: 640px) {
