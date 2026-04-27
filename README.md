@@ -1,2 +1,3 @@
 # JeuDeLaVie
-[test Jeu De La Vie Vibe Coding](https://breizhimic.github.io/JeuDeLaVie/)
+[Jeu De La Vie](https://breizhimic.github.io/JeuDeLaVie/)
+thème

@@ -104,14 +104,11 @@ class Renderer {
     const W = canvas.width, H = canvas.height;
     const cs = cellSize;
 
-    // Couleurs selon thème
+    // Couleurs lues directement selon la classe (évite le timing CSS/transition)
     const isDark = document.body.classList.contains("dark");
-    const aliveColor = getComputedStyle(document.documentElement)
-      .getPropertyValue("--cell-alive").trim();
-    const deadColor = getComputedStyle(document.documentElement)
-      .getPropertyValue("--cell-dead").trim();
-    const gridColor = getComputedStyle(document.documentElement)
-      .getPropertyValue("--grid-line").trim();
+    const aliveColor = isDark ? "#f5f4f0" : "#0a0a0a";
+    const deadColor  = isDark ? "#0a0a0a" : "#f5f4f0";
+    const gridColor  = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.07)";
 
     // Fond
     ctx.fillStyle = deadColor;
