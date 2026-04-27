@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Jeu de la Vie — Vibe</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <div id="viewport"><canvas id="canvas"></canvas></div>
+    <aside class="controls">
+      <h1>Jeu de la Vie</h1>
+      <div class="row">
+        <button id="startBtn">Lancer</button>
+        <button id="stepBtn">Step</button>
+        <button id="clearBtn">Clear</button>
+        <button id="randomBtn">Random</button>
+      </div>
+      <div class="row">
+        <select id="preset"></select>
+        <button id="loadPreset">Charger</button>
+      </div>
+      <div class="row">
+        <button id="themeBtn">Inverser thème</button>
+      </div>
+      <div class="row">
+        <label>Importer RLE/JSON</label>
+        <input type="file" id="fileIn" accept=".rle,.txt,.json">
+        <button id="exportRle">Exporter RLE</button>
+        <button id="exportJson">Exporter JSON</button>
+      </div>
+      <div class="info">Peindre: clic gauche / Pan: clic droit / Zoom: molette</div>
+    </aside>
+  </div>
+  <script src="patterns.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

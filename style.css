@@ -1,0 +1,8 @@
+:root{--bg:#fff;--fg:#000;--panel:#f7f7f7}
+body.dark{--bg:#111;--fg:#fff;--panel:#1a1a1a}
+body{margin:0;font-family:Inter,Arial;background:var(--bg);color:var(--fg)}
+.app{display:flex;height:100vh}
+#viewport{flex:1;position:relative}
+.controls{width:320px;padding:12px;background:var(--panel);box-shadow:-2px 0 6px rgba(0,0,0,0.06)}
+button,select,input{margin:4px;padding:8px}
+canvas{width:100%;height:100%;display:block}
