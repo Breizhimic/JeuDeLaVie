@@ -9,30 +9,54 @@
 <body>
   <div class="app">
     <div id="viewport"><canvas id="canvas"></canvas></div>
+
     <aside class="controls">
       <h1>Jeu de la Vie</h1>
+
       <div class="row">
         <button id="startBtn">Lancer</button>
         <button id="stepBtn">Step</button>
         <button id="clearBtn">Clear</button>
         <button id="randomBtn">Random</button>
       </div>
+
       <div class="row">
         <select id="preset"></select>
         <button id="loadPreset">Charger</button>
       </div>
+
       <div class="row">
         <button id="themeBtn">Inverser thème</button>
       </div>
+
+      <div class="row">
+        <label for="speed">Vitesse (gen/s)</label>
+        <input id="speed" type="range" min="1" max="30" value="6">
+      </div>
+
+      <div class="row">
+        <label for="cellSize">Taille cellule (px)</label>
+        <input id="cellSize" type="range" min="4" max="40" value="12">
+      </div>
+
       <div class="row">
         <label>Importer RLE/JSON</label>
         <input type="file" id="fileIn" accept=".rle,.txt,.json">
+      </div>
+
+      <div class="row">
         <button id="exportRle">Exporter RLE</button>
         <button id="exportJson">Exporter JSON</button>
       </div>
-      <div class="info">Peindre: clic gauche / Pan: clic droit / Zoom: molette</div>
+
+      <div class="info">
+        Peindre : clic gauche / Glisser pour peindre<br>
+        Pan : clic droit + glisser / Zoom : molette<br>
+        Touche G : afficher/masquer grille
+      </div>
     </aside>
   </div>
+
   <script src="patterns.js"></script>
   <script src="app.js"></script>
 </body>
