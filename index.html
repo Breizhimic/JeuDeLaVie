@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Game of Life</title>
+  <!-- Favicon : carré noir (symbole du jeu) généré en SVG inline -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23111'/><rect x='4' y='4' width='10' height='10' fill='%23f5f4f0'/><rect x='18' y='4' width='10' height='10' fill='%23f5f4f0'/><rect x='4' y='18' width='10' height='10' fill='%23f5f4f0'/><rect x='18' y='18' width='10' height='10' fill='%231a1a1a'/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
@@ -13,14 +15,13 @@
   <!-- ═══ SIDEBAR ═══ -->
   <aside id="sidebar">
     <div class="logo">
-      <span class="logo-symbol">⬛</span>
+      <canvas id="logo-canvas" width="32" height="32"></canvas>
       <h1>GAME<br/>OF LIFE</h1>
     </div>
 
     <!-- Controls -->
     <section class="panel" id="panel-controls">
       <h2 class="panel-title">CONTRÔLES</h2>
-
       <div class="btn-row">
         <button id="btn-play" class="btn btn-primary" title="Lancer / Pause (Espace)">
           <span id="play-icon">▶</span>
@@ -28,15 +29,12 @@
         </button>
         <button id="btn-step" class="btn btn-secondary" title="Avancer d'un pas (→)">STEP</button>
       </div>
-
       <button id="btn-clear" class="btn btn-ghost full-width">EFFACER</button>
       <button id="btn-random" class="btn btn-ghost full-width">ALÉATOIRE</button>
-
       <div class="slider-group">
         <label>VITESSE <span id="speed-val">10</span> gen/s</label>
         <input type="range" id="speed-slider" min="1" max="60" value="10" />
       </div>
-
       <div class="slider-group">
         <label>ZOOM <span id="zoom-val">16</span>px</label>
         <input type="range" id="zoom-slider" min="4" max="64" value="16" />
@@ -62,41 +60,18 @@
       </div>
     </section>
 
-    <!-- Patterns -->
+    <!-- Patterns — select généré dynamiquement par ui.js -->
     <section class="panel" id="panel-patterns">
       <h2 class="panel-title">MOTIFS</h2>
       <select id="pattern-select" class="select-field">
         <option value="">— Choisir un motif —</option>
-        <optgroup label="Oscillateurs">
-          <option value="blinker">Blinker (T=2)</option>
-          <option value="toad">Crapaud (T=2)</option>
-          <option value="beacon">Phare (T=2)</option>
-          <option value="pulsar">Pulsar (T=3)</option>
-          <option value="pentadecathlon">Pentadécathlon (T=15)</option>
-        </optgroup>
-        <optgroup label="Vaisseaux">
-          <option value="glider">Planeur (Glider)</option>
-          <option value="lwss">LWSS</option>
-          <option value="mwss">MWSS</option>
-          <option value="hwss">HWSS</option>
-        </optgroup>
-        <optgroup label="Canons">
-          <option value="gosper">Gosper Glider Gun</option>
-          <option value="simkin">Simkin Glider Gun</option>
-        </optgroup>
-        <optgroup label="Still Life">
-          <option value="block">Bloc</option>
-          <option value="beehive">Ruche</option>
-          <option value="loaf">Miche</option>
-          <option value="boat">Bateau</option>
-        </optgroup>
-        <optgroup label="Autres">
-          <option value="rpentomino">R-Pentomino</option>
-          <option value="diehard">Die Hard</option>
-          <option value="acorn">Gland (Acorn)</option>
-          <option value="pi">Pi Heptomino</option>
-        </optgroup>
       </select>
+
+      <!-- Prévisualisation -->
+      <div id="pattern-preview-wrap">
+        <canvas id="pattern-preview" width="200" height="90"></canvas>
+        <span id="pattern-preview-name"></span>
+      </div>
 
       <!-- Rotation -->
       <div class="transform-row">
@@ -138,28 +113,37 @@
     <!-- Theme -->
     <div class="theme-row">
       <span>THÈME</span>
-      <button id="btn-theme" class="theme-toggle" title="Inverser le thème">
+      <button id="btn-theme" class="theme-toggle" title="Inverser le thème (T)">
         <span id="theme-icon">◐</span>
       </button>
     </div>
 
+    <!-- Raccourcis clavier -->
     <div class="help-hint">
-      <kbd>Espace</kbd> play · <kbd>→</kbd> step<br/>
-      <kbd>Clic droit+glisser</kbd> pan · <kbd>Molette</kbd> zoom<br/>
-      <kbd>+/-</kbd> zoom · <kbd>0</kbd> centrer · <kbd>Échap</kbd> annuler</div>
+      <div class="help-title">RACCOURCIS</div>
+      <div class="help-grid">
+        <kbd>Espace</kbd><span>Play / Pause</span>
+        <kbd>→</kbd><span>Pas suivant</span>
+        <kbd>C</kbd><span>Effacer grille</span>
+        <kbd>R</kbd><span>Aléatoire</span>
+        <kbd>T</kbd><span>Thème clair/sombre</span>
+        <kbd>+</kbd><span>Zoom avant</span>
+        <kbd>-</kbd><span>Zoom arrière</span>
+        <kbd>0</kbd><span>Recentrer vue</span>
+        <kbd>Échap</kbd><span>Annuler placement</span>
+        <kbd>Clic droit</kbd><span>Naviguer (pan)</span>
+        <kbd>Molette</kbd><span>Zoom souris</span>
+      </div>
+    </div>
   </aside>
 
   <!-- ═══ CANVAS AREA ═══ -->
   <main id="canvas-area">
     <canvas id="life-canvas"></canvas>
-
-    <!-- Floating HUD -->
     <div id="hud">
       <span id="hud-gen">GÉN. 0</span>
       <span id="hud-mode" class="mode-badge">DESSIN</span>
     </div>
-
-    <!-- Notification toast -->
     <div id="toast"></div>
   </main>
 
